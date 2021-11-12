@@ -56,30 +56,44 @@ class _HomePageState extends State<HomePage> {
         title: const Text('라인트레이싱 컨트롤러'),
       ),
       body: Container(
-        padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            Row(
-              children: [
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(
-                    '자동주행 꺼짐',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  SizedBox(height: 4),
-                  Text('수동주행 모드입니다.')
-                ]),
-                Switch(
-                  value: _activeAutopilot,
-                  onChanged: (value) {
-                    setState(() {
-                      _activeAutopilot = value;
-                    });
-                  },
+            InkWell(
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _activeAutopilot ? '자동주행 켜짐' : '자동주행 꺼짐',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        SizedBox(height: 4),
+                        Text(_activeAutopilot ? '자동 주행 중입니다.' : '수동주행 모드입니다.')
+                      ],
+                    ),
+                    Expanded(child: Container()),
+                    Switch(
+                      value: _activeAutopilot,
+                      onChanged: (value) {
+                        setState(() {
+                          _activeAutopilot = value;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-              ],
+              ),
+              onTap: () {
+                setState(() {
+                  _activeAutopilot = !_activeAutopilot;
+                });
+              },
             ),
-            Divider(height: 30),
+            Divider(height: 0),
+            SizedBox(height: 25),
             Column(
               children: [
                 Row(

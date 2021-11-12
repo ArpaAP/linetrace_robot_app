@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.arpaap.linetracing_robot.linetrace_robot_app">
    <application
-        android:label="linetrace_robot_app"
+        android:label="라인봇"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
