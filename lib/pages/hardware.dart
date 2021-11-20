@@ -1,8 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:linetrace_robot_app/providers/connection.dart';
+import 'package:provider/provider.dart';
 
 class HardwarePage extends StatefulWidget {
   const HardwarePage({Key? key}) : super(key: key);
@@ -12,13 +12,12 @@ class HardwarePage extends StatefulWidget {
 }
 
 class _HardwarePageState extends State<HardwarePage> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   final flutterBlue = FlutterBlue.instance;
 
   @override
   void initState() {
     super.initState();
-    flutterBlue.startScan(timeout: const Duration(seconds: 10));
+    flutterBlue.startScan(timeout: Duration(seconds: 10));
   }
 
   @override
@@ -46,24 +45,22 @@ class _HardwarePageState extends State<HardwarePage> {
                                 await e.device.disconnect();
                                 await e.device.connect();
 
-                                final services =
-                                    await e.device.discoverServices();
-
-                                for (var service in services) {
-                                  if (service.uuid.toString().toLowerCase() !=
-                                      '0000FFE0-0000-1000-8000-00805F9B34FB'
-                                          .toLowerCase()) {
-                                    continue;
-                                  }
-                                  var characteristics = service.characteristics;
-                                  for (BluetoothCharacteristic c
-                                      in characteristics) {
-                                    await c.write(utf8.encode('CONNECTED\n'));
-                                  }
-                                }
+                                setState(() {
+                                  Provider.of<ConnectionProvider>(
+                                    context,
+                                    listen: false,
+                                  ).connectedDevice = e.device.id;
+                                });
                               },
                               leading: const Icon(Icons.devices),
                               title: Text(e.device.name),
+                              subtitle: e.device.id ==
+                                      Provider.of<ConnectionProvider>(
+                                        context,
+                                        listen: false,
+                                      ).connectedDevice
+                                  ? Text('연결됨')
+                                  : null,
                             )),
                           );
                         }).toList() +
@@ -74,10 +71,23 @@ class _HardwarePageState extends State<HardwarePage> {
                                 child: ListTile(
                               onTap: () async {
                                 final devices =
-                                    await flutterBlue.connectedDevices;
-                                for (var e in devices) {
-                                  e.disconnect();
+                                    (await flutterBlue.connectedDevices)
+                                        .where((e) =>
+                                            e.id ==
+                                            Provider.of<ConnectionProvider>(
+                                              context,
+                                              listen: false,
+                                            ).connectedDevice);
+                                for (final e in devices) {
+                                  await e.disconnect();
                                 }
+
+                                setState(() {
+                                  Provider.of<ConnectionProvider>(
+                                    context,
+                                    listen: false,
+                                  ).connectedDevice = null;
+                                });
                               },
                               leading: const Icon(Icons.delete),
                               title: const Text('연결 해제'),

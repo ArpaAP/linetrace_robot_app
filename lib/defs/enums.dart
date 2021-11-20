@@ -1,0 +1,1 @@
+enum ControlMode { arrow, gyro }
