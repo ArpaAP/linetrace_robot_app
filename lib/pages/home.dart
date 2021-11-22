@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
           SpinKitFoldingCube(color: Colors.indigo[400], size: 40),
           SizedBox(height: 16),
           Text(
-            '자동주행 중입니다.',
+            '자동 주행 중입니다.',
             style: Theme.of(context).textTheme.headline6,
           )
         ],
